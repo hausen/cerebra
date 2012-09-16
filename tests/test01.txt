@@ -1,0 +1,22 @@
+OBS:X,Z,Y
+EXO:U1,U2,U3
+
+U1 = .7
+U2 = .5
+U3 = .5
+
+X = U1 + U3 + 1
+Z = U2 + 1
+Y = X + Z + U1 + U2
+
+OUTPUT 1 : "first output"
+        MARGIN: X, Y, Z
+        INTERV:
+
+OUTPUT 2 : "second output"
+        MARGIN: X, Y 
+        INTERV: X = 1  
+
+OUTPUT 3 : "third output"
+        MARGIN: X, Y 
+        INTERV: X = 0 , Z  = 1
