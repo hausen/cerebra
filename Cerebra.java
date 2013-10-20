@@ -14,31 +14,40 @@ public class Cerebra
         CommonTokenStream tokens = new CommonTokenStream(lex);
 
         CerebraParser g = new CerebraParser(tokens);
-        try {
-            ProblemDescription pd = g.file();
-            BinaryMultivariableEvaluator ev =
-                             new BinaryMultivariableEvaluator(
-                                              pd.nonobservables,
-                                              pd.equations );
-            for ( Map.Entry<Integer, String> out :
-                      pd.outputComments.entrySet() )
-            {
-                Integer OutputID = out.getKey();
-                String comment = out.getValue();
-                Map<String,Boolean> intervention =
-                    pd.interventions.get( OutputID );
-                List<ObservableVariable> margin =
-                    pd.margins.get( OutputID );
-                
-                Probability[] bins = ev.evaluateAssignments(
-                                         margin, intervention  );
-                output.println("OUTPUT " + OutputID + ": " + comment);
-                ev.prettyPrintDistribution( output, margin, bins );
-                output.println("END OUTPUT");
-                output.println();
-            }
-        } catch (RecognitionException e) {
-            e.printStackTrace();
+        ProblemDescription pd = null;
+        try
+        {
+            pd = g.file();
+        }
+        catch (Exception e)
+        {
+            System.err.println(e.getMessage() + " (" + e.getClass().getName() + ")" );
+            System.exit(1);
+        }
+
+        BinaryMultivariableEvaluator ev =
+                         new BinaryMultivariableEvaluator(
+                                          pd.nonobservables,
+                                          pd.equations );
+        for ( Map.Entry<Integer, String> out :
+                  pd.outputComments.entrySet() )
+        {
+            Integer OutputID = out.getKey();
+            String comment = out.getValue();
+            Map<String,Boolean> intervention =
+                pd.interventions.get( OutputID );
+            List<ObservableVariable> margin =
+                pd.margins.get( OutputID );
+            Map<ObservableVariable,Boolean> conditions =
+                pd.conditions.get( OutputID );
+
+            Probability[] bins = ev.evaluateAssignments(
+                                     margin, intervention,
+                                     conditions  );
+            output.println("OUTPUT " + OutputID + ": " + comment);
+            ev.prettyPrintDistribution( output, margin, bins );
+            output.println("END OUTPUT");
+            output.println();
         }
     }
 

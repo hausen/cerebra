@@ -1,0 +1,50 @@
+OBS:X,Z,W,Y
+EXO:U1,U2,U3,U4,A,B,C
+
+U1 = .5
+U2 = .5
+U3 = .5
+U4 = .5
+A  = .5
+B  = .5
+C  = .5
+
+X = U1
+Z = U1 + U2 
+W = Z 
+W = ((U3) | B) + (B & (1 + Z))    
+Y = X + W + U2
+Y = ((X + W + U2) & A) + (A | (U4 + X + W + U2))
+
+OUTPUT 1 : "versao uncondicional"
+        MARGIN: X, Y, W, Z
+        INTERV:
+	COND: W = 1
+
+OUTPUT 2 : "interv. tipo do(X=1)"
+        MARGIN: X, Y
+        INTERV: X = 1
+
+OUTPUT 3 : "interv. tipo do(Z=1)"
+        MARGIN: X, W, Y
+        INTERV: Z = 1 
+
+OUTPUT 4 : "interv. tipo do(Z=0)"
+        MARGIN: X, W, Y
+        INTERV: Z = 0
+
+OUTPUT 5 : "P(X)"
+        MARGIN: X
+        INTERV:
+
+OUTPUT 6 : "P(Z)"
+        MARGIN: Z
+        INTERV:
+
+OUTPUT 7 : "P(Z, W)"
+        MARGIN: Z, W
+        INTERV:
+
+OUTPUT 8 : "P(X, Z, Y)"
+        MARGIN: X, Z, Y
+        INTERV:

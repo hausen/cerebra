@@ -1,5 +1,6 @@
+# This is a comment
 OBS:X,Z,Y
-EXO:U1,U2,U3
+EXO:U1,U2,U3 # So is this
 
 U1 = .7
 U2 = .5
@@ -17,6 +18,10 @@ OUTPUT 2 : "second output"
         MARGIN: X, Y 
         INTERV: X = 1  
 
-OUTPUT 3 : "third output"
+OUTPUT 3 : "fourth output"
+        MARGIN: X, Y 
+        INTERV: X = 0 , Z  = 1
+
+OUTPUT 4 : "third output"
         MARGIN: X, Y 
         INTERV: X = 0 , Z  = 1

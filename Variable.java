@@ -47,6 +47,17 @@ public abstract class Variable implements ExpressionNode
         executionStack.push(value);
     }
 
+    public Boolean getCondition()
+    {
+        return condition;
+    }
+
+    public void setCondition(Boolean theCondition)
+    {
+        condition = theCondition;
+    }
+
+    protected Boolean condition = null;
     protected String name;
     protected boolean value;
     protected boolean defined = false;

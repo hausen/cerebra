@@ -1,8 +1,10 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class ProblemDescription
 {
@@ -199,6 +201,38 @@ public class ProblemDescription
             newInterventions.put( variableName, Boolean.TRUE );
     }
 
+    public void pushCondition(String variableName, String value)
+    {
+        int val = Integer.parseInt( value );
+        if ( val == 0 )
+            newConditions.put( variableName, Boolean.FALSE );
+        else
+            newConditions.put( variableName, Boolean.TRUE );
+    }
+
+    public void commitConditionListToOutput( String outputNumber )
+    throws VariableUndefinedException, ClassCastException
+    {
+        Integer num = new Integer( outputNumber );
+        Map<ObservableVariable,Boolean> conds =
+                                new TreeMap<ObservableVariable,Boolean>();
+        for ( Map.Entry<String, Boolean> entry : newConditions.entrySet() )
+        {
+            String name = entry.getKey(); 
+            Boolean value = entry.getValue(); 
+            ObservableVariable ov = (ObservableVariable)get(name);
+            if ( ov == null || !marginSet.get(num).contains(ov) )
+            {
+                String err = "undefined variable " + name +
+                          " in COND line in output " + outputNumber;
+                throw new VariableUndefinedException(err);
+            }
+            conds.put(ov, value);
+        }
+        conditions.put( num, conds );
+        newConditions.clear();
+    }
+
     public void commitInterventionListToOutput( String outputNumber,
                                                 String comment )
     throws RedefinitionException
@@ -211,11 +245,11 @@ public class ProblemDescription
         if ( outputComments.get( num ) != null )
         {
             throw new RedefinitionException("output " + outputNumber +
-                                            "redefined");
+                                            " redefined");
         }
         outputComments.put( num, comment );
         interventions.put( num, newInterventions );
-        newInterventions = new HashMap<String,Boolean>();
+        newInterventions.clear();
     }
 
     public void commitVariableListToOutput(String outputNumber)
@@ -223,8 +257,10 @@ public class ProblemDescription
     {
         Integer num = new Integer( outputNumber );
 
-        LinkedList<ObservableVariable> newMargins =
-                    new LinkedList<ObservableVariable>();
+        ArrayList<ObservableVariable> newMargins =
+                    new ArrayList<ObservableVariable>();
+        TreeSet<ObservableVariable> newMarginSet =
+                    new TreeSet<ObservableVariable>();
 
         for ( String name : newvars )
         {
@@ -233,11 +269,13 @@ public class ProblemDescription
             {
                 throw new VariableUndefinedException(
                           "undefined variable " + name +
-                          "in output " + outputNumber);
+                          " in output " + outputNumber);
             }
-            newMargins.addLast(ov);
+            newMargins.add(ov);
+            newMarginSet.add(ov);
         }
         margins.put( num, newMargins );
+        marginSet.put( num, newMarginSet );
         newvars.clear();
     }
 
@@ -251,13 +289,19 @@ public class ProblemDescription
                     new LinkedList<ObservableVariable>();
     public TreeMap<Integer, List<ObservableVariable> > margins =
                     new TreeMap<Integer, List<ObservableVariable> >();
+    public TreeMap<Integer, TreeSet<ObservableVariable> > marginSet =
+                    new TreeMap<Integer, TreeSet<ObservableVariable> >();
     public TreeMap<Integer, Map<String,Boolean> > interventions =
                     new TreeMap<Integer, Map<String,Boolean> >();
+    public TreeMap<Integer, Map<ObservableVariable,Boolean> > conditions =
+                    new TreeMap<Integer, Map<ObservableVariable,Boolean> >();
     public TreeMap<Integer, String> outputComments =
                     new TreeMap<Integer, String>();
 
     protected boolean foundError = false;
 
+    protected Map<String,Boolean> newConditions =
+                      new HashMap<String,Boolean>();
     protected Map<String,Boolean> newInterventions =
                       new HashMap<String,Boolean>();
     protected LinkedList<String> newvars = new LinkedList<String>();

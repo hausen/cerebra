@@ -1,7 +1,7 @@
 import java.util.LinkedList;
 import java.util.Stack;
 
-public class ObservableVariable extends Variable
+public class ObservableVariable extends Variable implements Comparable<ObservableVariable>
 {
     ObservableVariable(String name) { super(name); }
 
@@ -56,6 +56,11 @@ public class ObservableVariable extends Variable
     public LinkedList<ExpressionNode> getExpression()
     {
         return expression;
+    }
+
+    public int compareTo(ObservableVariable ov)
+    {
+        return name.compareTo(ov.name);
     }
 
     protected LinkedList<ExpressionNode> expression = null;

@@ -52,7 +52,7 @@ exoprobability
 	;
 
 equation
-	:	VARIABLE '=' expression NEWLINE?
+	:	VARIABLE '=' expression NEWLINE
 		{
 			pd.setObservable($VARIABLE.text);
 		}
@@ -102,9 +102,11 @@ outputDef throws Exception
 	:	'OUTPUT' outputNum=INTEGER ':' comment=STRING? NEWLINE*
 	        'MARGIN' ':' varlist NEWLINE*
 	        'INTERV' ':' intervention? ( ',' intervention )* NEWLINE*
+	        ( 'COND' ':' condition? ( ',' condition )* NEWLINE* )?
 		{
 			pd.commitInterventionListToOutput($outputNum.text, $comment.text);
 			pd.commitVariableListToOutput($outputNum.text);
+			pd.commitConditionListToOutput($outputNum.text);
 		}
 	;
 
@@ -115,9 +117,18 @@ intervention
 		}
 	;
 
+condition
+	:	VARIABLE '=' INTEGER
+		{
+			pd.pushCondition($VARIABLE.text, $INTEGER.text);
+		}
+	;
+
+
 VARIABLE:	('a'..'z'|'A'..'Z'|'_')('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 FRACTIONAL:	'0'?'.''0'..'9'+ ;
 INTEGER	:	'0'..'9'+ ;
 NEWLINE	:	'\r'? '\n' ;
 STRING	:	'"'((~'"')|'\\"')*'"' ;
 WS	:	(' '|'\t')+ {skip();} ;
+COMMENT	:	'#' ~('\r'|'\n')* {skip();} ;

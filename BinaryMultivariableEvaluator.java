@@ -1,6 +1,7 @@
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class BinaryMultivariableEvaluator
 {
@@ -14,9 +15,18 @@ public class BinaryMultivariableEvaluator
 
     public Probability[] evaluateAssignments(
                        List<ObservableVariable> margin,
-                       Map<String,Boolean> intervention )
+                       Map<String,Boolean> intervention,
+                       Map<ObservableVariable,Boolean> condition )
     {
         int nbins = (int)Math.pow(2,margin.size());
+        int numvars = 0;
+
+        for ( ObservableVariable ov : margin )
+        {
+            Boolean cond = condition.get(ov);
+            ov.setCondition(cond);
+        }
+
         Probability bins[] = new Probability[nbins];
         for ( int i=0; i<nbins; ++i )
             bins[i] = new Probability();
@@ -34,6 +44,38 @@ public class BinaryMultivariableEvaluator
                     eq.reevaluate();
             }
             addProbability(margin, bins);
+        }
+
+        if ( !condition.isEmpty() )
+        {
+            Probability sumSatisfiedConditions = new Probability();
+            for ( int i=0; i<bins.length; ++i )
+            {
+                int nbin = i;
+                boolean satisfiesCondition = true;
+                for ( int varNum = margin.size()-1;
+                      varNum >= 0 && satisfiesCondition;
+                      --varNum)
+                {
+                    boolean varVal = ( (nbin & 0x1) == 1);
+                    nbin = nbin >> 1;
+                    Boolean cond = margin.get(varNum).getCondition();
+                    if ( cond != null && !cond.equals(varVal) )
+                        satisfiesCondition = false;
+                }
+                if ( satisfiesCondition )
+                    sumSatisfiedConditions.add(bins[i]);
+                else
+                    bins[i] = new Probability();
+            }
+
+            if ( !sumSatisfiedConditions.isZero() )
+            {
+                for ( int i=0; i<bins.length; ++i )
+                {
+                    bins[i].divide(sumSatisfiedConditions);
+                }
+            }
         }
 
         return bins;

@@ -1,6 +1,7 @@
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
-public class Probability
+public class Probability implements Comparable<Probability>
 {
     public Probability()
     {
@@ -35,6 +36,11 @@ public class Probability
         value = value.multiply(p.value);
     }
 
+    public void divide(Probability p)
+    {
+        value = value.divide(p.value, RoundingMode.HALF_EVEN);
+    }
+
     public Probability getComplement()
     {
         Probability ret = new Probability( 1.0 );
@@ -45,6 +51,16 @@ public class Probability
     public String toString()
     {
         return value.toString();
+    }
+
+    public int compareTo(Probability p)
+    {
+        return value.compareTo(p.value);
+    }
+
+    public boolean isZero()
+    {
+        return value.compareTo(BigDecimal.ZERO) == 0;
     }
 
     protected BigDecimal value;
