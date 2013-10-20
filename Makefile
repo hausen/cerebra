@@ -1,7 +1,7 @@
 ANTLRJAR:=antlr-3.5.1-complete-no-st3.jar
 CLIJAR:=commons-cli-1.2.jar
 PROGNAME:=Cerebra
-VERSION:=0.3
+VERSION:=0.3.1
 BUILDDIR:=build
 SRCS:=$(wildcard *.java)
 OBJS:=$(SRCS:%.java=$(BUILDDIR)/%.class)
