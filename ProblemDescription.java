@@ -249,7 +249,7 @@ public class ProblemDescription
         }
         outputComments.put( num, comment );
         interventions.put( num, newInterventions );
-        newInterventions.clear();
+        newInterventions = new HashMap<String,Boolean>();
     }
 
     public void commitVariableListToOutput(String outputNumber)
